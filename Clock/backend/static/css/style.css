@@ -1,0 +1,729 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Colores día */
+  --day-bg-start: #4facfe;
+  --day-bg-end: #00f2fe;
+  --day-text: #1a1a2e;
+  --day-accent: #ff6b6b;
+  --day-card-bg: rgba(255, 255, 255, 0.95);
+
+  /* Colores noche */
+  --night-bg-start: #0f0c29;
+  --night-bg-end: #302b63;
+  --night-text: #ffffff;
+  --night-accent: #ffd700;
+  --night-card-bg: rgba(30, 30, 60, 0.95);
+
+  /* Colores exóticos */
+  --exotic-purple: #a855f7;
+  --exotic-pink: #ec4899;
+  --exotic-cyan: #06b6d4;
+  --exotic-orange: #f97316;
+  --exotic-green: #10b981;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+body.day-mode {
+  background: linear-gradient(135deg, var(--day-bg-start) 0%, var(--day-bg-end) 100%);
+  color: var(--day-text);
+}
+
+body.night-mode {
+  background: linear-gradient(135deg, var(--night-bg-start) 0%, var(--night-bg-end) 100%);
+  color: var(--night-text);
+}
+
+/* Animación de fondo */
+.background-animation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+body.day-mode .background-animation {
+  background: radial-gradient(circle at 20% 50%, var(--exotic-cyan) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, var(--exotic-orange) 0%, transparent 50%),
+    radial-gradient(circle at 40% 20%, var(--exotic-pink) 0%, transparent 50%);
+  animation: dayPulse 15s ease-in-out infinite;
+}
+
+body.night-mode .background-animation {
+  background: radial-gradient(circle at 30% 40%, var(--exotic-purple) 0%, transparent 50%),
+    radial-gradient(circle at 70% 70%, var(--night-accent) 0%, transparent 50%),
+    radial-gradient(circle at 50% 10%, var(--exotic-cyan) 0%, transparent 50%);
+  animation: nightPulse 20s ease-in-out infinite;
+}
+
+@keyframes dayPulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes nightPulse {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.15);
+  }
+}
+
+/* Contenedor principal */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 3rem;
+  animation: fadeInDown 1s ease-out;
+}
+
+.title {
+  font-family: "Helvetica", sans-serif;
+  font-size: 3.5rem;
+  font-weight: 900;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.title-icon {
+  font-size: 3rem;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  font-weight: 300;
+}
+
+/* Selector de zona horaria */
+.timezone-selector {
+  background: var(--day-card-bg);
+  padding: 1.5rem;
+  border-radius: 20px;
+  margin-bottom: 2rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  animation: fadeInUp 1s ease-out 0.2s both;
+  backdrop-filter: blur(10px);
+}
+
+body.night-mode .timezone-selector {
+  background: var(--night-card-bg);
+}
+
+.selector-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.label-icon {
+  font-size: 1.5rem;
+}
+
+.country-select {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.1rem;
+  border: 3px solid var(--exotic-purple);
+  border-radius: 15px;
+  background: white;
+  color: var(--day-text);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+}
+
+body.night-mode .country-select {
+  background: rgba(30, 30, 60, 0.95);
+  color: var(--night-text);
+  border-color: var(--night-accent);
+}
+
+.country-select option {
+  background: white;
+  color: var(--day-text);
+  padding: 0.5rem;
+}
+
+body.night-mode .country-select option {
+  background: #1a1a3e;
+  color: var(--night-text);
+}
+
+.country-select:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(168, 85, 247, 0.4);
+}
+
+.country-select:focus {
+  outline: none;
+  border-color: var(--exotic-pink);
+  box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.2);
+}
+
+/* Contenedor del reloj */
+.clock-container {
+  background: var(--day-card-bg);
+  padding: 3rem;
+  border-radius: 30px;
+  margin-bottom: 2rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: fadeInUp 1s ease-out 0.4s both;
+  backdrop-filter: blur(10px);
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+}
+
+body.night-mode .clock-container {
+  background: var(--night-card-bg);
+}
+
+.clock-container::before {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  background: linear-gradient(45deg, var(--exotic-purple), var(--exotic-pink), var(--exotic-cyan), var(--exotic-orange));
+  border-radius: 30px;
+  z-index: -1;
+  animation: gradientRotate 4s linear infinite;
+}
+
+@keyframes gradientRotate {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    filter: hue-rotate(360deg);
+  }
+}
+
+/* Información de ubicación */
+.location-info {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid rgba(168, 85, 247, 0.3);
+}
+
+.flag {
+  font-size: 4rem;
+  animation: rotate 3s ease-in-out infinite;
+}
+
+@keyframes rotate {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+}
+
+.location-details {
+  flex: 1;
+}
+
+.country-name {
+  font-family: "Helvetica", sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+
+.city-name {
+  font-size: 1.2rem;
+  opacity: 0.8;
+  margin-bottom: 0.2rem;
+}
+
+.gmt-info {
+  font-size: 1rem;
+  opacity: 0.7;
+  font-weight: 600;
+  color: var(--exotic-purple);
+}
+
+body.night-mode .gmt-info {
+  color: var(--night-accent);
+}
+
+/* Display del tiempo */
+.time-display {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.digital-clock {
+  font-family: "Helvetica", sans-serif;
+  font-size: 5rem;
+  font-weight: 900;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.3rem;
+  margin-bottom: 1rem;
+  text-shadow: 0 0 30px rgba(168, 85, 247, 0.5);
+}
+
+.am-pm {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-left: 1rem;
+  opacity: 0.9;
+  color: var(--exotic-purple);
+}
+
+body.night-mode .am-pm {
+  color: var(--night-accent);
+}
+
+.analog-clock-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.analog-clock {
+  width: 300px;
+  height: 300px;
+  filter: drop-shadow(0 10px 30px rgba(168, 85, 247, 0.3));
+}
+
+.clock-face {
+  fill: rgba(255, 255, 255, 0.1);
+  stroke: var(--exotic-purple);
+  stroke-width: 4;
+}
+
+body.night-mode .clock-face {
+  fill: rgba(255, 255, 255, 0.05);
+  stroke: var(--night-accent);
+}
+
+.hour-marker {
+  stroke: var(--exotic-purple);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+body.night-mode .hour-marker {
+  stroke: var(--night-accent);
+}
+
+.hour-hand {
+  stroke: var(--exotic-purple);
+  stroke-width: 6;
+  stroke-linecap: round;
+  transform-origin: 100px 100px;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.night-mode .hour-hand {
+  stroke: var(--night-accent);
+}
+
+.minute-hand {
+  stroke: var(--exotic-pink);
+  stroke-width: 4;
+  stroke-linecap: round;
+  transform-origin: 100px 100px;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.night-mode .minute-hand {
+  stroke: var(--exotic-cyan);
+}
+
+.second-hand {
+  stroke: var(--exotic-orange);
+  stroke-width: 2;
+  stroke-linecap: round;
+  transform-origin: 100px 100px;
+  transition: transform 0.1s linear;
+}
+
+body.night-mode .second-hand {
+  stroke: var(--exotic-green);
+}
+
+.center-dot {
+  fill: var(--exotic-purple);
+}
+
+body.night-mode .center-dot {
+  fill: var(--night-accent);
+}
+
+.clock-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: rgba(168, 85, 247, 0.05);
+  border-radius: 15px;
+}
+
+body.night-mode .clock-controls {
+  background: rgba(255, 215, 0, 0.05);
+}
+
+.control-btn {
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
+  border: 2px solid var(--exotic-purple);
+  border-radius: 12px;
+  background: white;
+  color: var(--exotic-purple);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+body.night-mode .control-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--night-accent);
+  border-color: var(--night-accent);
+}
+
+.control-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(168, 85, 247, 0.4);
+  background: var(--exotic-purple);
+  color: white;
+}
+
+body.night-mode .control-btn:hover {
+  background: var(--night-accent);
+  color: var(--night-bg-start);
+  box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+}
+
+.control-btn:active {
+  transform: translateY(0);
+}
+
+.reset-btn {
+  border-color: var(--exotic-orange);
+  color: var(--exotic-orange);
+  font-weight: 700;
+}
+
+body.night-mode .reset-btn {
+  border-color: var(--exotic-green);
+  color: var(--exotic-green);
+}
+
+.reset-btn:hover {
+  background: var(--exotic-orange);
+  color: white;
+}
+
+body.night-mode .reset-btn:hover {
+  background: var(--exotic-green);
+  color: var(--night-bg-start);
+}
+
+/* Sección motivacional */
+.motivational-section {
+  animation: fadeInUp 1s ease-out 0.6s both;
+  margin-bottom: 3rem;
+}
+
+.phrase-container {
+  background: linear-gradient(135deg, var(--exotic-purple), var(--exotic-pink));
+  padding: 2.5rem;
+  border-radius: 25px;
+  box-shadow: 0 15px 50px rgba(168, 85, 247, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+body.night-mode .phrase-container {
+  background: linear-gradient(135deg, var(--night-bg-end), var(--exotic-purple));
+}
+
+.phrase-container::before {
+  
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  font-size: 2rem;
+  opacity: 0.5;
+}
+
+.phrase-container::after {
+  
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  font-size: 2rem;
+  opacity: 0.5;
+}
+
+.motivational-phrase {
+  font-size: 1.8rem;
+  font-weight: 600;
+  text-align: center;
+  color: white;
+  line-height: 1.6;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 1s ease-out;
+}
+
+/* Relojes mundiales */
+.world-clocks {
+  animation: fadeInUp 1s ease-out 0.8s both;
+}
+
+.section-title {
+  font-family: "Helvetica", sans-serif;
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-weight: 700;
+}
+
+.world-clocks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.world-clock-card {
+  background: var(--day-card-bg);
+  padding: 1.5rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  border: 2px solid transparent;
+}
+
+body.night-mode .world-clock-card {
+  background: var(--night-card-bg);
+}
+
+.world-clock-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(168, 85, 247, 0.4);
+  border-color: var(--exotic-purple);
+}
+
+.world-clock-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.world-clock-flag {
+  font-size: 2rem;
+}
+
+.world-clock-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.world-clock-time {
+  font-family: "Helvetica", sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--exotic-purple);
+  text-align: center;
+}
+
+body.night-mode .world-clock-time {
+  color: var(--night-accent);
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 2rem;
+  margin-top: 3rem;
+  opacity: 0.8;
+  animation: fadeIn 1s ease-out 1s both;
+}
+
+.footer-note {
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  opacity: 0.7;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .title {
+    font-size: 2.5rem;
+  }
+
+  .digital-clock {
+    font-size: 3.5rem;
+  }
+
+  .analog-clock {
+    width: 250px;
+    height: 250px;
+  }
+
+  .motivational-phrase {
+    font-size: 1.3rem;
+  }
+
+  .world-clocks-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .container {
+    padding: 1rem;
+  }
+
+  .clock-container {
+    padding: 2rem 1.5rem;
+  }
+
+  .clock-controls {
+    gap: 0.5rem;
+  }
+
+  .control-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 2rem;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .digital-clock {
+    font-size: 2.5rem;
+  }
+
+  .analog-clock {
+    width: 200px;
+    height: 200px;
+  }
+
+  .flag {
+    font-size: 3rem;
+  }
+
+  .country-name {
+    font-size: 1.5rem;
+  }
+
+  .clock-controls {
+    flex-direction: column;
+  }
+
+  .control-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
