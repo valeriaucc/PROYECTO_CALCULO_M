@@ -1,0 +1,983 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="text-center mb-4">
+        VALENSSIA
+    </h1>
+
+    <ul class="nav nav-tabs mb-4" id="mainTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <!-- Removiendo emojis de los tabs -->
+            <button class="nav-link active" id="visualizacion-tab" data-bs-toggle="tab" 
+                    data-bs-target="#visualizacion" type="button">
+                <i class="fas fa-cube"></i> Visualización
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="derivadas-tab" data-bs-toggle="tab" 
+                    data-bs-target="#derivadas" type="button">
+                <i class="fas fa-chart-line"></i> Derivadas
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="optimizacion-tab" data-bs-toggle="tab" 
+                    data-bs-target="#optimizacion" type="button">
+                <i class="fas fa-bullseye"></i> Optimización
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="integrales-tab" data-bs-toggle="tab" 
+                    data-bs-target="#integrales" type="button">
+                <i class="fas fa-integral"></i> Integrales
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="historial-tab" data-bs-toggle="tab" 
+                    data-bs-target="#historial" type="button">
+                <i class="fas fa-history"></i> Historial
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="mainTabsContent">
+        
+         
+        <div class="tab-pane fade show active" id="visualizacion" role="tabpanel">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Configuración</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="formVisualizacion">
+                                <div class="mb-3">
+                                    <label class="form-label">Función f(x,y)</label>
+                                    <input type="text" class="form-control" id="vis_funcion" 
+                                           placeholder="Ej: x**2 + y**2" required>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label class="form-label">Rango X</label>
+                                        <input type="number" class="form-control form-control-sm mb-2" 
+                                               id="vis_x_min" value="-5" step="0.5">
+                                        <input type="number" class="form-control form-control-sm" 
+                                               id="vis_x_max" value="5" step="0.5">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label">Rango Y</label>
+                                        <input type="number" class="form-control form-control-sm mb-2" 
+                                               id="vis_y_min" value="-5" step="0.5">
+                                        <input type="number" class="form-control form-control-sm" 
+                                               id="vis_y_max" value="5" step="0.5">
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 mt-3">
+                                    <i class="fas fa-chart-area"></i> Graficar
+                                </button>
+                                
+                                <!-- Agregando botón para analizar dominio y rango -->
+                                <button type="button" class="btn btn-info w-100 mt-2" id="btnAnalizarDominio">
+                                    <i class="fas fa-info-circle"></i> Analizar Dominio y Rango
+                                </button>
+                            </form>
+                            
+                            <div class="mt-3">
+                                <button class="btn btn-sm btn-outline-primary w-100 mb-2 ejemplo-vis" data-f="x**2 + y**2">Paraboloide</button>
+                                <button class="btn btn-sm btn-outline-primary w-100 mb-2 ejemplo-vis" data-f="sin(x)*cos(y)">Ondas</button>
+                                <button class="btn btn-sm btn-outline-primary w-100 ejemplo-vis" data-f="x**2 - y**2">Silla de montar</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Moviendo la sección de dominio y rango al lado izquierdo para mejor visibilidad -->
+                    <div class="card shadow-sm mt-3" id="analisisFuncion" style="display:none;">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0"><i class="fas fa-info-circle"></i> Análisis de la Función</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-light border mb-2">
+                                <h6 class="text-primary mb-1"><i class="fas fa-arrows-alt-h"></i> Dominio</h6>
+                                <p class="mb-0 fw-bold" id="dominio_resultado">-</p>
+                            </div>
+                            <div class="alert alert-light border mb-2">
+                                <h6 class="text-success mb-1"><i class="fas fa-arrows-alt-v"></i> Rango</h6>
+                                <p class="mb-0 fw-bold" id="rango_resultado">-</p>
+                            </div>
+                            <div id="analisis_adicional"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="card shadow-sm mb-3">
+                        <div class="card-body">
+                            <div id="grafico3d" style="width:100%; height:500px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="derivadas" role="tabpanel">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">Configuración</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="formDerivadas">
+                                <div class="mb-3">
+                                    <label class="form-label">Función f(x,y)</label>
+                                    <input type="text" class="form-control" id="der_funcion" 
+                                           placeholder="Ej: x**2 + y**2" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Punto (opcional)</label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="number" class="form-control" id="der_x" placeholder="x" step="0.1">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="number" class="form-control" id="der_y" placeholder="y" step="0.1">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="fas fa-calculator"></i> Calcular
+                                </button>
+                                <!-- Agregando botón para visualizar gradiente -->
+                                <button type="button" class="btn btn-outline-success w-100 mt-2" id="btnVisualizarGradiente">
+                                    <i class="fas fa-project-diagram"></i> Visualizar Gradiente
+                                </button>
+                            </form>
+                            <div class="mt-3">
+                                <button class="btn btn-sm btn-outline-success w-100 mb-2 ejemplo-der" data-f="x**2 + y**2">x² + y²</button>
+                                <button class="btn btn-sm btn-outline-success w-100 ejemplo-der" data-f="x*y">x·y</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="card shadow-sm" id="resultadosDerivadas" style="display:none;">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">Resultados</h5>
+                        </div>
+                        <div class="card-body" id="contenidoDerivadas"></div>
+                    </div>
+                    <!-- Agregando área para visualización del gradiente -->
+                    <div class="card shadow-sm mt-3" id="graficoGradiente" style="display:none;">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">Campo Vectorial del Gradiente</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="grafico_gradiente" style="width:100%; height:500px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+         
+        <div class="tab-pane fade" id="optimizacion" role="tabpanel">
+            <div class="row">
+                <div class="col-lg-5">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0">Configuración</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="formOptimizacion">
+                                <div class="mb-3">
+                                    <label class="form-label">Función Objetivo f(x,y)</label>
+                                    <input type="text" class="form-control" id="opt_funcion" 
+                                           placeholder="Ej: x*y" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Restricción g(x,y) = 0</label>
+                                    <input type="text" class="form-control" id="opt_restriccion" 
+                                           placeholder="Ej: x**2 + y**2 - 1" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Tipo</label>
+                                    <select class="form-select" id="opt_tipo">
+                                        <option value="max">Maximizar</option>
+                                        <option value="min">Minimizar</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-warning text-dark w-100">
+                                    <i class="fas fa-calculator"></i> Resolver
+                                </button>
+                            </form>
+                            <div class="mt-3">
+                                <button class="btn btn-sm btn-outline-warning w-100 mb-2 ejemplo-opt" 
+                                        data-f="x*y" data-r="x**2 + y**2 - 1">
+                                    Max x·y en círculo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="card shadow-sm" id="resultadosOptimizacion" style="display:none;">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0">Solución</h5>
+                        </div>
+                        <div class="card-body" id="contenidoOptimizacion"></div>
+                    </div>
+                    <!-- Agregando área para visualización de optimización -->
+                    <div class="card shadow-sm mt-3" id="graficoOptimizacion" style="display:none;">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0">Visualización de Optimización</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="grafico_optimizacion" style="width:100%; height:500px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+          
+        <div class="tab-pane fade" id="integrales" role="tabpanel">
+            <div class="row">
+                <div class="col-lg-5">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-danger text-white">
+                            <h5 class="mb-0">Configuración</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="nav nav-pills mb-3" id="integralTabs">
+                                <li class="nav-item">
+                                    <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#int-doble">Doble</button>
+                                </li>
+                                <li class="nav-item">
+                                    <button class="nav-link" data-bs-toggle="pill" data-bs-target="#int-triple">Triple</button>
+                                </li>
+                            </ul>
+                            
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="int-doble">
+                                    <form id="formIntegralDoble">
+                                        <div class="mb-3">
+                                            <label class="form-label">Función f(x,y)</label>
+                                            <input type="text" class="form-control" id="int_doble_f" 
+                                                   placeholder="Ej: x*y" required>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <label class="form-label small">Límites X</label>
+                                                <input type="number" class="form-control form-control-sm mb-1" 
+                                                       id="int_doble_xmin" placeholder="min" step="0.1" required>
+                                                <input type="number" class="form-control form-control-sm" 
+                                                       id="int_doble_xmax" placeholder="max" step="0.1" required>
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="form-label small">Límites Y</label>
+                                                <input type="number" class="form-control form-control-sm mb-1" 
+                                                       id="int_doble_ymin" placeholder="min" step="0.1" required>
+                                                <input type="number" class="form-control form-control-sm" 
+                                                       id="int_doble_ymax" placeholder="max" step="0.1" required>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-danger w-100 mt-3">
+                                            <i class="fas fa-calculator"></i> Calcular
+                                        </button>
+                                        <!-- Agregando botón para visualizar región -->
+                                        <button type="button" class="btn btn-outline-danger w-100 mt-2" id="btnVisualizarRegionDoble">
+                                            <i class="fas fa-cube"></i> Visualizar Región
+                                        </button>
+                                    </form>
+                                </div>
+                                
+                                <div class="tab-pane fade" id="int-triple">
+                                    <form id="formIntegralTriple">
+                                        <div class="mb-3">
+                                            <label class="form-label">Función f(x,y,z)</label>
+                                            <input type="text" class="form-control" id="int_triple_f" 
+                                                   placeholder="Ej: x*y*z" required>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-4">
+                                                <label class="form-label small">X</label>
+                                                <input type="number" class="form-control form-control-sm mb-1" 
+                                                       id="int_triple_xmin" placeholder="min" step="0.1" required>
+                                                <input type="number" class="form-control form-control-sm" 
+                                                       id="int_triple_xmax" placeholder="max" step="0.1" required>
+                                            </div>
+                                            <div class="col-4">
+                                                <label class="form-label small">Y</label>
+                                                <input type="number" class="form-control form-control-sm mb-1" 
+                                                       id="int_triple_ymin" placeholder="min" step="0.1" required>
+                                                <input type="number" class="form-control form-control-sm" 
+                                                       id="int_triple_ymax" placeholder="max" step="0.1" required>
+                                            </div>
+                                            <div class="col-4">
+                                                <label class="form-label small">Z</label>
+                                                <input type="number" class="form-control form-control-sm mb-1" 
+                                                       id="int_triple_zmin" placeholder="min" step="0.1" required>
+                                                <input type="number" class="form-control form-control-sm" 
+                                                       id="int_triple_zmax" placeholder="max" step="0.1" required>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-danger w-100 mt-3">
+                                            <i class="fas fa-calculator"></i> Calcular
+                                        </button>
+                                        <!-- Agregando botón para visualizar región triple -->
+                                        <button type="button" class="btn btn-outline-danger w-100 mt-2" id="btnVisualizarRegionTriple">
+                                            <i class="fas fa-cube"></i> Visualizar Región
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="card shadow-sm" id="resultadosIntegral" style="display:none;">
+                        <div class="card-header bg-danger text-white">
+                            <h5 class="mb-0">Resultado</h5>
+                        </div>
+                        <div class="card-body" id="contenidoIntegral"></div>
+                    </div>
+                    <!-- Agregando área para visualización de región de integración -->
+                    <div class="card shadow-sm mt-3" id="graficoRegionIntegracion" style="display:none;">
+                        <div class="card-header bg-danger text-white">
+                            <h5 class="mb-0">Región de Integración</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="grafico_region" style="width:100%; height:500px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+         
+        <div class="tab-pane fade" id="historial" role="tabpanel">
+            <div class="d-flex justify-content-between mb-3">
+                <h4><i class="fas fa-history"></i> Historial de Cálculos</h4>
+                <button class="btn btn-danger btn-sm" id="btnLimpiarHistorial">
+                    <i class="fas fa-trash"></i> Limpiar
+                </button>
+            </div>
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div id="contenidoHistorial">
+                        <p class="text-muted text-center">No hay cálculos en el historial</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="loadingSpinner" class="position-fixed top-50 start-50 translate-middle" style="display:none; z-index:9999;">
+    <div class="spinner-border text-primary" style="width:3rem; height:3rem;"></div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const App = {
+    historial: [],
+    ultimosResultadosOpt: null,
+    
+    init() {
+        this.setupEventListeners();
+        this.loadHistorial();
+    },
+    
+    setupEventListeners() {
+        document.getElementById('formVisualizacion').addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.graficarSuperficie();
+        });
+        
+        document.querySelectorAll('.ejemplo-vis').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.getElementById('vis_funcion').value = btn.dataset.f;
+            });
+        });
+        
+        document.getElementById('formDerivadas').addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.calcularDerivadas();
+        });
+        
+        document.querySelectorAll('.ejemplo-der').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.getElementById('der_funcion').value = btn.dataset.f;
+            });
+        });
+        
+        document.getElementById('formOptimizacion').addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.optimizarLagrange();
+        });
+        
+        document.querySelectorAll('.ejemplo-opt').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.getElementById('opt_funcion').value = btn.dataset.f;
+                document.getElementById('opt_restriccion').value = btn.dataset.r;
+            });
+        });
+        
+        document.getElementById('formIntegralDoble').addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.calcularIntegralDoble();
+        });
+        
+        document.getElementById('formIntegralTriple').addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.calcularIntegralTriple();
+        });
+        
+        document.getElementById('btnLimpiarHistorial').addEventListener('click', () => {
+            this.limpiarHistorial();
+        });
+        
+        document.getElementById('btnAnalizarDominio').addEventListener('click', () => {
+            const funcion = document.getElementById('vis_funcion').value.trim();
+            if (!funcion) {
+                alert('Ingresa una función primero');
+                return;
+            }
+            this.analizarFuncion(funcion);
+        });
+        
+        document.getElementById('btnVisualizarGradiente').addEventListener('click', () => {
+            this.visualizarGradiente();
+        });
+        
+        document.getElementById('btnVisualizarRegionDoble').addEventListener('click', () => {
+            this.visualizarRegionIntegracion('doble');
+        });
+        
+        document.getElementById('btnVisualizarRegionTriple').addEventListener('click', () => {
+            this.visualizarRegionIntegracion('triple');
+        });
+    },
+    
+    async graficarSuperficie() {
+        const funcion = document.getElementById('vis_funcion').value.trim();
+        const x_min = parseFloat(document.getElementById('vis_x_min').value);
+        const x_max = parseFloat(document.getElementById('vis_x_max').value);
+        const y_min = parseFloat(document.getElementById('vis_y_min').value);
+        const y_max = parseFloat(document.getElementById('vis_y_max').value);
+        
+        if (!funcion) return alert('Ingresa una función');
+        
+        this.showLoading(true);
+        
+        try {
+            const response = await fetch('/api/graficar_superficie', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    funcion: funcion,
+                    x_range: [x_min, x_max],
+                    y_range: [y_min, y_max]
+                })
+            });
+            
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error('Error del servidor: ' + response.status);
+            }
+            
+            const data = await response.json();
+            
+            if (data.error) {
+                alert('Error: ' + data.error);
+            } else {
+                Plotly.newPlot('grafico3d', data.grafico.data, data.grafico.layout, {responsive: true});
+                this.agregarAlHistorial('Visualización', funcion, data);
+                
+                await this.analizarFuncion(funcion);
+            }
+        } catch (error) {
+            console.error('[v0] Error en graficarSuperficie:', error);
+            alert('Error al conectar con el servidor. Verifica que Flask esté ejecutándose.');
+        } finally {
+            this.showLoading(false);
+        }
+    },
+    
+    async calcularDerivadas() {
+        const funcion = document.getElementById('der_funcion').value.trim();
+        const punto_x = document.getElementById('der_x').value;
+        const punto_y = document.getElementById('der_y').value;
+        
+        if (!funcion) return alert('Ingresa una función');
+        
+        const datos = { funcion: funcion };
+        if (punto_x && punto_y) {
+            datos.punto = [parseFloat(punto_x), parseFloat(punto_y)];
+        }
+        
+        this.showLoading(true);
+        
+        try {
+            const response = await fetch('/api/calcular_derivadas', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datos)
+            });
+            
+            if (!response.ok) {
+                throw new Error('Error del servidor: ' + response.status);
+            }
+            
+            const data = await response.json();
+            
+            if (data.error) {
+                alert('Error: ' + data.error);
+            } else {
+                this.mostrarResultadosDerivadas(data);
+                this.agregarAlHistorial('Derivadas', funcion, data);
+            }
+        } catch (error) {
+            console.error('[v0] Error en calcularDerivadas:', error);
+            alert('Error al conectar con el servidor. Verifica que Flask esté ejecutándose.');
+        } finally {
+            this.showLoading(false);
+        }
+    },
+    
+    async optimizarLagrange() {
+        const funcion = document.getElementById('opt_funcion').value.trim();
+        const restriccion = document.getElementById('opt_restriccion').value.trim();
+        const tipo = document.getElementById('opt_tipo').value;
+        
+        if (!funcion || !restriccion) return alert('Completa todos los campos');
+        
+        this.showLoading(true);
+        
+        try {
+            const response = await fetch('/api/optimizar_lagrange', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ funcion, restriccion, tipo })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Error del servidor: ' + response.status);
+            }
+            
+            const data = await response.json();
+            
+            if (data.error) {
+                alert('Error: ' + data.error);
+            } else {
+                this.ultimosResultadosOpt = data;
+                this.mostrarResultadosOptimizacion(data);
+                this.agregarAlHistorial('Optimización', funcion, data);
+                
+                await this.visualizarOptimizacion(funcion, restriccion, data.puntos_criticos);
+            }
+        } catch (error) {
+            console.error('Error en optimizarLagrange:', error);
+            alert('Error al conectar con el servidor. Verifica que Flask esté ejecutándose.');
+        } finally {
+            this.showLoading(false);
+        }
+    },
+    
+    async calcularIntegralDoble() {
+        const funcion = document.getElementById('int_doble_f').value.trim();
+        const xmin = parseFloat(document.getElementById('int_doble_xmin').value);
+        const xmax = parseFloat(document.getElementById('int_doble_xmax').value);
+        const ymin = parseFloat(document.getElementById('int_doble_ymin').value);
+        const ymax = parseFloat(document.getElementById('int_doble_ymax').value);
+        
+        if (!funcion) return alert('Ingresa una función');
+        
+        this.showLoading(true);
+        
+        try {
+            const response = await fetch('/api/calcular_integral_doble', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    funcion: funcion,
+                    limites: [[xmin, xmax], [ymin, ymax]]
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Error del servidor: ' + response.status);
+            }
+            
+            const data = await response.json();
+            
+            if (data.error) {
+                alert('Error: ' + data.error);
+            } else {
+                this.mostrarResultadosIntegral(data, 'doble');
+                this.agregarAlHistorial('Integral Doble', funcion, data);
+            }
+        } catch (error) {
+            console.error('[v0] Error en calcularIntegralDoble:', error);
+            alert('Error al conectar con el servidor. Verifica que Flask esté ejecutándose.');
+        } finally {
+            this.showLoading(false);
+        }
+    },
+    
+    async calcularIntegralTriple() {
+        const funcion = document.getElementById('int_triple_f').value.trim();
+        const xmin = parseFloat(document.getElementById('int_triple_xmin').value);
+        const xmax = parseFloat(document.getElementById('int_triple_xmax').value);
+        const ymin = parseFloat(document.getElementById('int_triple_ymin').value);
+        const ymax = parseFloat(document.getElementById('int_triple_ymax').value);
+        const zmin = parseFloat(document.getElementById('int_triple_zmin').value);
+        const zmax = parseFloat(document.getElementById('int_triple_zmax').value);
+        
+        if (!funcion) return alert('Ingresa una función');
+        
+        this.showLoading(true);
+        
+        try {
+            const response = await fetch('/api/calcular_integral_triple', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    funcion: funcion,
+                    limites: [[xmin, xmax], [ymin, ymax], [zmin, zmax]]
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Error del servidor: ' + response.status);
+            }
+            
+            const data = await response.json();
+            
+            if (data.error) {
+                alert('Error: ' + data.error);
+            } else {
+                this.mostrarResultadosIntegral(data, 'triple');
+                this.agregarAlHistorial('Integral Triple', funcion, data);
+            }
+        } catch (error) {
+            console.error('[v0] Error en calcularIntegralTriple:', error);
+            alert('Error al conectar con el servidor. Verifica que Flask esté ejecutándose.');
+        } finally {
+            this.showLoading(false);
+        }
+    },
+    
+    mostrarResultadosDerivadas(data) {
+        if (!data || !data.derivadas) {
+            alert('Error: Respuesta inválida del servidor');
+            return;
+        }
+        
+        const html = `
+            <h6>Función: f(x,y) = ${data.funcion || 'N/A'}</h6>
+            <hr>
+            <p><strong>∂f/∂x:</strong> ${data.derivadas.dx || 'N/A'}</p>
+            <p><strong>∂f/∂y:</strong> ${data.derivadas.dy || 'N/A'}</p>
+            ${data.gradiente ? `<p><strong>Gradiente:</strong> (${data.gradiente.x}, ${data.gradiente.y})</p>` : ''}
+        `;
+        document.getElementById('contenidoDerivadas').innerHTML = html;
+        document.getElementById('resultadosDerivadas').style.display = 'block';
+        document.getElementById('graficoGradiente').style.display = 'none'; // Ocultar gráfico de gradiente si se muestran nuevas derivadas
+    },
+    
+    mostrarResultadosOptimizacion(data) {
+        if (!data) {
+            alert('Error: Respuesta inválida del servidor');
+            return;
+        }
+        
+        let html = `
+            <h6>Problema: ${data.tipo === 'max' ? 'Maximizar' : 'Minimizar'} ${data.funcion || 'N/A'}</h6>
+            <p>Sujeto a: ${data.restriccion || 'N/A'} = 0</p>
+            <hr>
+        `;
+        
+        if (data.puntos_criticos && data.puntos_criticos.length > 0) {
+            html += '<h6>Puntos Críticos:</h6><ul>';
+            data.puntos_criticos.forEach(p => {
+                html += `<li>(${p.x}, ${p.y}) - Valor: ${p.valor}</li>`;
+            });
+            html += '</ul>';
+        }
+        
+        document.getElementById('contenidoOptimizacion').innerHTML = html;
+        document.getElementById('resultadosOptimizacion').style.display = 'block';
+    },
+    
+    mostrarResultadosIntegral(data, tipo) {
+        if (!data) {
+            alert('Error: Respuesta inválida del servidor');
+            return;
+        }
+        
+        const html = `
+            <h6>Integral ${tipo === 'doble' ? 'Doble' : 'Triple'}</h6>
+            <p><strong>Función:</strong> ${data.funcion || 'N/A'}</p>
+            <hr>
+            <div class="alert alert-success">
+                <h5>Resultado: ${data.resultado || 'N/A'}</h5>
+            </div>
+        `;
+        document.getElementById('contenidoIntegral').innerHTML = html;
+        document.getElementById('resultadosIntegral').style.display = 'block';
+        document.getElementById('graficoRegionIntegracion').style.display = 'none'; // Ocultar gráfico de región
+    },
+    
+    agregarAlHistorial(tipo, entrada, resultado) {
+        const item = {
+            tipo: tipo,
+            entrada: entrada,
+            resultado: resultado,
+            timestamp: new Date().toLocaleString()
+        };
+        this.historial.unshift(item);
+        this.actualizarHistorial();
+    },
+    
+    actualizarHistorial() {
+        const contenido = document.getElementById('contenidoHistorial');
+        if (this.historial.length === 0) {
+            contenido.innerHTML = '<p class="text-muted text-center">No hay cálculos en el historial</p>';
+            return;
+        }
+        
+        let html = '<div class="list-group">';
+        this.historial.forEach((item, index) => {
+            html += `
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between">
+                        <h6 class="mb-1">${item.tipo}</h6>
+                        <small>${item.timestamp}</small>
+                    </div>
+                    <p class="mb-1"><code>${item.entrada}</code></p>
+                </div>
+            `;
+        });
+        html += '</div>';
+        contenido.innerHTML = html;
+    },
+    
+    loadHistorial() {
+        this.actualizarHistorial();
+    },
+    
+    limpiarHistorial() {
+        if (confirm('¿Limpiar todo el historial?')) {
+            this.historial = [];
+            this.actualizarHistorial();
+        }
+    },
+    
+    showLoading(show) {
+        document.getElementById('loadingSpinner').style.display = show ? 'block' : 'none';
+    },
+    
+    async analizarFuncion(funcion) {
+        this.showLoading(true);
+        try {
+            const response = await fetch('/api/analizar_funcion', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ funcion: funcion })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Error al analizar función');
+            }
+            
+            const data = await response.json();
+            
+            if (data.error) {
+                console.error('[v0] Error en análisis:', data.error);
+                alert('Error: ' + data.error);
+                return;
+            }
+            
+            document.getElementById('dominio_resultado').textContent = data.dominio || 'ℝ²';
+            document.getElementById('rango_resultado').textContent = data.rango || 'ℝ';
+            
+            // Mostrar información adicional si existe
+            let adicionalHtml = '';
+            if (data.limites) {
+                adicionalHtml += '<div class="mt-2"><h6 class="text-muted small">Límites:</h6>';
+                adicionalHtml += '<ul class="small mb-0">';
+                for (const [key, value] of Object.entries(data.limites)) {
+                    adicionalHtml += `<li><strong>${key}:</strong> ${value}</li>`;
+                }
+                adicionalHtml += '</ul></div>';
+            }
+            
+            if (data.puntos_criticos && data.puntos_criticos.length > 0) {
+                adicionalHtml += '<div class="mt-2"><h6 class="text-muted small">Puntos Críticos:</h6><ul class="small mb-0">';
+                data.puntos_criticos.forEach(p => {
+                    adicionalHtml += `<li>(${p.x.toFixed(2)}, ${p.y.toFixed(2)})</li>`;
+                });
+                adicionalHtml += '</ul></div>';
+            }
+            
+            document.getElementById('analisis_adicional').innerHTML = adicionalHtml;
+            document.getElementById('analisisFuncion').style.display = 'block';
+            
+        } catch (error) {
+            console.error('[v0] Error en analizarFuncion:', error);
+            alert('Error al analizar la función. Verifica que el servidor esté ejecutándose.');
+        } finally {
+            this.showLoading(false);
+        }
+    },
+
+    async visualizarGradiente() {
+        const funcion = document.getElementById('der_funcion').value.trim();
+        
+        if (!funcion) {
+            alert('Ingresa una función primero');
+            return;
+        }
+        
+        this.showLoading(true);
+        
+        try {
+            const response = await fetch('/api/graficar_gradiente', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    funcion: funcion,
+                    x_range: [-3, 3],
+                    y_range: [-3, 3]
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Error del servidor: ' + response.status);
+            }
+            
+            const data = await response.json();
+            
+            if (data.error) {
+                alert('Error: ' + data.error);
+            } else {
+                Plotly.newPlot('grafico_gradiente', data.grafico.data, data.grafico.layout, {responsive: true});
+                document.getElementById('graficoGradiente').style.display = 'block';
+                document.getElementById('resultadosDerivadas').style.display = 'none'; // Ocultar resultados de derivadas
+            }
+        } catch (error) {
+            console.error('Error en visualizarGradiente:', error);
+            alert('Error al conectar con el servidor.');
+        } finally {
+            this.showLoading(false);
+        }
+    },
+    
+    async visualizarOptimizacion(funcion, restriccion, puntos_criticos) {
+        this.showLoading(true);
+        
+        try {
+            const response = await fetch('/api/graficar_optimizacion', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    funcion: funcion,
+                    restriccion: restriccion,
+                    puntos_criticos: puntos_criticos
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Error del servidor: ' + response.status);
+            }
+            
+            const data = await response.json();
+            
+            if (data.error) {
+                alert('Error: ' + data.error);
+            } else {
+                Plotly.newPlot('grafico_optimizacion', data.grafico.data, data.grafico.layout, {responsive: true});
+                document.getElementById('graficoOptimizacion').style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Error en visualizarOptimizacion:', error);
+            alert('Error al conectar con el servidor.');
+        } finally {
+            this.showLoading(false);
+        }
+    },
+    
+    async visualizarRegionIntegracion(tipo) {
+        let funcion, limites;
+        
+        if (tipo === 'doble') {
+            funcion = document.getElementById('int_doble_f').value.trim();
+            const xmin = parseFloat(document.getElementById('int_doble_xmin').value);
+            const xmax = parseFloat(document.getElementById('int_doble_xmax').value);
+            const ymin = parseFloat(document.getElementById('int_doble_ymin').value);
+            const ymax = parseFloat(document.getElementById('int_doble_ymax').value);
+            
+            if (!funcion || isNaN(xmin) || isNaN(xmax) || isNaN(ymin) || isNaN(ymax)) {
+                alert('Completa todos los campos primero');
+                return;
+            }
+            
+            limites = [[xmin, xmax], [ymin, ymax]];
+        } else { // tipo === 'triple'
+            funcion = document.getElementById('int_triple_f').value.trim();
+            const xmin = parseFloat(document.getElementById('int_triple_xmin').value);
+            const xmax = parseFloat(document.getElementById('int_triple_xmax').value);
+            const ymin = parseFloat(document.getElementById('int_triple_ymin').value);
+            const ymax = parseFloat(document.getElementById('int_triple_ymax').value);
+            const zmin = parseFloat(document.getElementById('int_triple_zmin').value);
+            const zmax = parseFloat(document.getElementById('int_triple_zmax').value);
+            
+            if (!funcion || isNaN(xmin) || isNaN(xmax) || isNaN(ymin) || isNaN(ymax) || isNaN(zmin) || isNaN(zmax)) {
+                alert('Completa todos los campos primero');
+                return;
+            }
+            
+            limites = [[xmin, xmax], [ymin, ymax], [zmin, zmax]];
+        }
+        
+        this.showLoading(true);
+        
+        try {
+            const response = await fetch('/api/graficar_region_integracion', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    funcion: funcion,
+                    limites: limites,
+                    tipo: tipo
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Error del servidor: ' + response.status);
+            }
+            
+            const data = await response.json();
+            
+            if (data.error) {
+                alert('Error: ' + data.error);
+            } else {
+                Plotly.newPlot('grafico_region', data.grafico.data, data.grafico.layout, {responsive: true});
+                document.getElementById('graficoRegionIntegracion').style.display = 'block';
+                document.getElementById('resultadosIntegral').style.display = 'none'; // Ocultar resultados de integral
+            }
+        } catch (error) {
+            console.error('Error en visualizarRegionIntegracion:', error);
+            alert('Error al conectar con el servidor.');
+        } finally {
+            this.showLoading(false);
+        }
+    },
+};
+
+document.addEventListener('DOMContentLoaded', () => App.init());
+</script>
+{% endblock %}
