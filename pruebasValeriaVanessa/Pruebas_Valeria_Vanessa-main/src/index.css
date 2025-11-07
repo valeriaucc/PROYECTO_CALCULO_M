@@ -1,0 +1,31 @@
+@import "tailwindcss";
+/* 🌸 Tema rosa pastel */
+.theme-rosa {
+  --bg-color: #ffe4ec;
+  --text-color: #5a2446;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+/* 🍃 Tema verde pastel */
+.theme-verde {
+  --bg-color: #e6ffe9;
+  --text-color: #2b4b2d;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+/* Aplica colores a body y transiciones suaves */
+body,
+html {
+  transition: background-color 0.6s ease, color 0.6s ease;
+}
+
+/* Ejemplo para compatibilidad con Tailwind */
+.theme-rosa body {
+  background: linear-gradient(to bottom right, #ffe4ec, #fff7fa);
+}
+
+.theme-verde body {
+  background: linear-gradient(to bottom right, #e6ffe9, #f4fff8);
+}

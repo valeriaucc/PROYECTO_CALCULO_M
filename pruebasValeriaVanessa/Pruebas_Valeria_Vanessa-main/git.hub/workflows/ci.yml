@@ -1,0 +1,35 @@
+name: ValeriaTest
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Descargar código
+      uses: actions/checkout@v4
+    
+    - name: ⚙️ Configurar Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+    
+    - name: 📦 Instalar dependencias
+      run: npm ci
+    
+    - name: 🧪 Ejecutar pruebas
+      run: npm test
+    
+    - name: ✅ Resultado
+      if: success()
+      run: echo "✅ Todas las pruebas pasaron correctamente!"
+    
+    - name: ❌ Error en pruebas
+      if: failure()
+      run: echo "❌ Algunas pruebas fallaron. Revisa los logs arriba."
