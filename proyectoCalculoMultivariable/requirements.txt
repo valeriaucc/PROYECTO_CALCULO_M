@@ -3,3 +3,4 @@ Flask-CORS==4.0.0
 sympy==1.12
 numpy==1.26.2
 plotly==5.18.0
+Werkzeug>=3.0.0
